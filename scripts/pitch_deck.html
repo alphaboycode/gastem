@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gastem Pitch Deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  @page {
+    size: 16in 9in;
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: #080a10;
+    color: #f1f5f9;
+    font-family: 'Inter', sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .slide {
+    width: 16in;
+    height: 9in;
+    padding: 0.8in 1in;
+    position: relative;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #0d121d 0%, #06080d 100%);
+    overflow: hidden;
+  }
+
+  /* Decorative slide top border */
+  .slide::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #f59e0b, #eab308, #a855f7, transparent);
+  }
+
+  /* Slide Footer */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.25in;
+    font-size: 0.95rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .slide-footer .tag {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  /* Typography */
+  h1, h2, h3, .serif {
+    font-family: 'Cinzel', serif;
+  }
+
+  .slide-header {
+    margin-bottom: 0.4in;
+  }
+
+  .slide-category {
+    font-size: 1.1rem;
+    color: #f59e0b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.1in;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .slide-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .slide-subtitle {
+    font-size: 1.25rem;
+    color: #94a3b8;
+    margin-top: 0.1in;
+    max-width: 11in;
+    line-height: 1.4;
+  }
+
+  /* Content Containers */
+  .content-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5in;
+    flex-grow: 1;
+  }
+
+  .content-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4in;
+    flex-grow: 1;
+  }
+
+  .content-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0.35in;
+    flex-grow: 1;
+  }
+
+  /* Cards */
+  .card {
+    background: rgba(19, 25, 38, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.35in 0.4in;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+
+  .card.highlight {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: linear-gradient(145deg, rgba(26, 21, 10, 0.8), rgba(19, 25, 38, 0.8));
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1);
+  }
+
+  .card.highlight-purple {
+    border-color: rgba(168, 85, 247, 0.4);
+    background: linear-gradient(145deg, rgba(20, 10, 30, 0.8), rgba(19, 25, 38, 0.8));
+  }
+
+  .card-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.15in;
+  }
+
+  .card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 0.12in;
+  }
+
+  .card-body {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  /* Stat Box */
+  .stat-big {
+    font-family: 'Cinzel', serif;
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #f59e0b;
+    line-height: 1;
+    margin-bottom: 0.1in;
+  }
+
+  .stat-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 0.08in;
+  }
+
+  .stat-desc {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  /* Cover Slide */
+  .cover-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at 50% 40%, rgba(245, 158, 11, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
+                #07090f;
+  }
+
+  .hero-logo {
+    font-size: 4.5rem;
+    margin-bottom: 0.2in;
+    filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.6));
+  }
+
+  .hero-title {
+    font-size: 5.2rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #b45309 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.15in;
+  }
+
+  .hero-subtitle {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #e2e8f0;
+    max-width: 10in;
+    margin-bottom: 0.4in;
+    letter-spacing: 0.04em;
+  }
+
+  .hero-badge-group {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 0.5in;
+  }
+
+  .hero-badge {
+    padding: 0.4rem 1.2rem;
+    border-radius: 30px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fde68a;
+  }
+
+  /* Table styling */
+  table.deck-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.1in;
+  }
+
+  table.deck-table th {
+    font-family: 'Cinzel', serif;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.2in 0.25in;
+    text-align: left;
+    color: #f59e0b;
+    font-size: 1.05rem;
+    border-bottom: 2px solid rgba(245, 158, 11, 0.4);
+  }
+
+  table.deck-table td {
+    padding: 0.2in 0.25in;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 1.05rem;
+    color: #cbd5e1;
+  }
+
+  table.deck-table tr.highlight-row {
+    background: rgba(245, 158, 11, 0.08);
+  }
+
+  table.deck-table tr.highlight-row td {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .pill-yes {
+    color: #10b981;
+    font-weight: 700;
+  }
+
+  .pill-no {
+    color: #ef4444;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide cover-slide">
+  <div class="hero-logo">⚔️</div>
+  <h1 class="hero-title">G A S T E M</h1>
+  <p class="hero-subtitle">The Unified Multi-Token Economy for On-Chain Gaming</p>
+  <div class="hero-badge-group">
+    <span class="hero-badge">One ERC-1155 Contract</span>
+    <span class="hero-badge">Gold • Potions • Unique Relics</span>
+    <span class="hero-badge">Botchain Testnet (Chain ID 968)</span>
+  </div>
+  <div style="color: #94a3b8; font-size: 1.05rem; letter-spacing: 0.1em; text-transform: uppercase;">
+    Seed Round Presentation • 2026 / 2027
+  </div>
+</div>
+
+<!-- SLIDE 2: THE PROBLEM -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">⚠️ Market Inefficiency</div>
+    <h2 class="slide-title">The Problem: Fragmentation in Web3 Gaming</h2>
+    <p class="slide-subtitle">Current Web3 game developers face triple contract complexity, high gas costs, and fragmented user friction.</p>
+  </div>
+  <div class="content-grid-3">
+    <div class="card">
+      <div class="card-icon">🏛️</div>
+      <h3 class="card-title">Triple Contract Overhead</h3>
+      <p class="card-body">Games deploy separate ERC-20s for gold, ERC-1155s for consumables, and ERC-721s for equipment. This triples development, auditing, and maintenance costs.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⛽</div>
+      <h3 class="card-title">High Gas & Multi-Approvals</h3>
+      <p class="card-body">Players must sign 3+ approval transactions to interact with game loops. Microtransactions become economically unviable due to cumulative network fees.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h3 class="card-title">No Atomic Multi-Transfers</h3>
+      <p class="card-body">Transferring a loadout (500 gold + 3 potions + 1 sword) requires sequential calls across contracts, exposing trades to partial failures and front-running.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL</span>
+    <span>SLIDE 02</span>
+  </div>
+</div>
+
+<!-- SLIDE 3: THE SOLUTION -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">🛡️ The Innovation</div>
+    <h2 class="slide-title">The Solution: Gastem Unified Architecture</h2>
+    <p class="slide-subtitle">All game assets live side-by-side in one ERC-1155 contract with strict supply invariants and dynamic metadata.</p>
+  </div>
+  <div class="content-grid-3">
+    <div class="card highlight">
+      <div class="card-icon">🪙</div>
+      <h3 class="card-title">Token ID 1: Realm Gold</h3>
+      <p class="card-body">Unlimited supply, 0-decimal sovereign currency for in-game purchases, trading, and quest rewards. Zero approval friction with item purchases.</p>
+    </div>
+    <div class="card highlight">
+      <div class="card-icon">🧪</div>
+      <h3 class="card-title">IDs 100-999: Consumables</h3>
+      <p class="card-body">Stackable game assets (Health/Mana Potions, Elixirs, Scrolls). Supports optional hard supply caps (e.g. 500) enforced directly at the smart contract level.</p>
+    </div>
+    <div class="card highlight-purple">
+      <div class="card-icon">🗡️</div>
+      <h3 class="card-title">IDs 1,000,000+: 1-of-1 Relics</h3>
+      <p class="card-body">Exclusive legendary equipment with supply locked to exactly 1. Re-minting is mathematically blocked at the bytecode level, even if the item is burned.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL</span>
+    <span>SLIDE 03</span>
+  </div>
+</div>
+
+<!-- SLIDE 4: MARKET OPPORTUNITY -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">📈 Market Expansion</div>
+    <h2 class="slide-title">Market Opportunity & Addressable TAM</h2>
+    <p class="slide-subtitle">Rapid growth in on-chain gaming demands high-throughput, unified item infrastructure.</p>
+  </div>
+  <div class="content-grid-3">
+    <div class="card">
+      <div class="stat-big">$65B+</div>
+      <div class="stat-label">Web3 Gaming TAM (2030)</div>
+      <div class="stat-desc">Projected global market for blockchain games driven by true player ownership and asset composability.</div>
+    </div>
+    <div class="card highlight">
+      <div class="stat-big">2,500+</div>
+      <div class="stat-label">Active Game Studios</div>
+      <div class="stat-desc">RPG, MMO, and Strategy titles currently transitioning to high-speed EVM chains like Botchain.</div>
+    </div>
+    <div class="card">
+      <div class="stat-big">78%</div>
+      <div class="stat-label">Gas Savings</div>
+      <div class="stat-desc">Reduction in player transaction overhead when bundling currencies and equipment in a single batch transfer.</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL</span>
+    <span>SLIDE 04</span>
+  </div>
+</div>
+
+<!-- SLIDE 5: TECHNICAL DEEP DIVE -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">⚙️ Engineering Excellence</div>
+    <h2 class="slide-title">Technical Architecture & Security</h2>
+    <p class="slide-subtitle">Modern Solidity ^0.8.24, OpenZeppelin v5.2.0, and 100% on-chain Base64 dynamic SVG metadata.</p>
+  </div>
+  <div class="content-grid-2">
+    <div class="card">
+      <h3 class="card-title" style="color: #f59e0b;">Smart Contract Highlights</h3>
+      <ul style="margin-left: 1.2rem; color: #94a3b8; font-size: 1.05rem; line-height: 1.8;">
+        <li><strong style="color: #fff;">Multi-Inheritance Resolution:</strong> Overrides <code>_update</code> between <code>ERC1155</code> and <code>ERC1155Supply</code> cleanly.</li>
+        <li><strong style="color: #fff;">Replay-Proof Unique Minting:</strong> Internal tracking array blocks re-issuance of unique IDs forever.</li>
+        <li><strong style="color: #fff;">100% On-Chain Base64 Metadata:</strong> Zero IPFS dependency. Renders embedded SVGs directly from EVM state.</li>
+        <li><strong style="color: #fff;">Granular Roles:</strong> Segregated <code>DEFAULT_ADMIN_ROLE</code> and <code>MINTER_ROLE</code> access controls.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 class="card-title" style="color: #a855f7;">Full-Stack Zero-Env Sync</h3>
+      <ul style="margin-left: 1.2rem; color: #94a3b8; font-size: 1.05rem; line-height: 1.8;">
+        <li><strong style="color: #fff;">Deterministic Sync Pipeline:</strong> <code>npm run sync</code> updates ABIs and deployed addresses with zero manual editing.</li>
+        <li><strong style="color: #fff;">Strict Viem Type-Safety:</strong> Fully typed ABI constants and clients with auto chain-switching for Chain 968.</li>
+        <li><strong style="color: #fff;">Zero Address Safeguards:</strong> Intelligent UI fallback prevents crash loops on un-deployed environments.</li>
+        <li><strong style="color: #fff;">Mobile-Friendly Plain CSS:</strong> Hand-crafted dark fantasy aesthetic with responsive grid cards.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL</span>
+    <span>SLIDE 05</span>
+  </div>
+</div>
+
+<!-- SLIDE 6: LIVE TRACTION -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">🚀 Live On Botchain Testnet</div>
+    <h2 class="slide-title">Traction & On-Chain Proven Execution</h2>
+    <p class="slide-subtitle">Deployed, tested, and actively operating on Botchain Testnet (Chain ID 968).</p>
+  </div>
+  <div class="content-grid-4">
+    <div class="card highlight">
+      <div class="stat-big">12 / 12</div>
+      <div class="stat-label">Foundry Tests Passing</div>
+      <div class="stat-desc">100% pass rate with fuzz testing on capped & unlimited supplies.</div>
+    </div>
+    <div class="card">
+      <div class="stat-big">27+</div>
+      <div class="stat-label">Confirmed On-Chain Txs</div>
+      <div class="stat-desc">Live deployments, mints, blueprints, and multi-wallet transfers.</div>
+    </div>
+    <div class="card highlight-purple">
+      <div class="stat-big">1-of-1</div>
+      <div class="stat-label">Sunforged Claymore</div>
+      <div class="stat-desc">Token ID 1,000,000 successfully forged with verified scarcity.</div>
+    </div>
+    <div class="card">
+      <div class="stat-big">102</div>
+      <div class="stat-label">Dynamic Blueprints</div>
+      <div class="stat-desc">Elixir of Dragon Breath created & minted with 500 cap.</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">DEPLOYED AT: 0x74300bF99A3689683212d3558191E16bD9092181</span>
+    <span>SLIDE 06</span>
+  </div>
+</div>
+
+<!-- SLIDE 7: COMPETITIVE MATRIX -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">⚔️ Competitive Edge</div>
+    <h2 class="slide-title">Why Gastem Beats Traditional Standards</h2>
+    <p class="slide-subtitle">A direct comparison with legacy multi-contract patterns.</p>
+  </div>
+  <div class="card" style="padding: 0.2in 0.3in;">
+    <table class="deck-table">
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>ERC-721 + ERC-20 Setup</th>
+          <th>Generic ERC-1155</th>
+          <th>Gastem Protocol</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight-row">
+          <td>Unified Contract Footprint</td>
+          <td class="pill-no">❌ 3+ Contracts</td>
+          <td class="pill-yes">✓ 1 Contract</td>
+          <td class="pill-yes">✓ 1 Contract</td>
+        </tr>
+        <tr>
+          <td>Strict 1-of-1 Scarcity Guarantee</td>
+          <td class="pill-yes">✓ Yes (ERC-721)</td>
+          <td class="pill-no">❌ No (Generic)</td>
+          <td class="pill-yes">✓ Hard Bytecode Invariant</td>
+        </tr>
+        <tr class="highlight-row">
+          <td>Atomic Mixed Transfers (Gold + Sword)</td>
+          <td class="pill-no">❌ Impossible</td>
+          <td>⚠️ Partial</td>
+          <td class="pill-yes">✓ Single Batch Transfer</td>
+        </tr>
+        <tr>
+          <td>Zero-Dependency On-Chain SVG Art</td>
+          <td class="pill-no">❌ Rare / Costly</td>
+          <td class="pill-no">❌ Rare</td>
+          <td class="pill-yes">✓ Native Base64 Embedded</td>
+        </tr>
+        <tr class="highlight-row">
+          <td>Gas Cost for Full Player Loadout</td>
+          <td>🔴 High (~180,000 gas)</td>
+          <td>🟡 Medium (~95,000 gas)</td>
+          <td class="pill-yes">🟢 Lowest (~48,000 gas)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL</span>
+    <span>SLIDE 07</span>
+  </div>
+</div>
+
+<!-- SLIDE 8: BUSINESS MODEL -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">💼 Sustainable Economics</div>
+    <h2 class="slide-title">Business Model & Monetization</h2>
+    <p class="slide-subtitle">Three diversified revenue streams aligned with studio and player success.</p>
+  </div>
+  <div class="content-grid-3">
+    <div class="card">
+      <div class="card-icon">💎</div>
+      <h3 class="card-title">1. Primary Forging Fees</h3>
+      <p class="card-body">Micro-fees collected on new item blueprint registrations (<code>createFungible</code>) and legendary item forges (<code>mintUnique</code>). Low-friction protocol revenue.</p>
+    </div>
+    <div class="card highlight">
+      <div class="card-icon">🔄</div>
+      <h3 class="card-title">2. Marketplace Protocol Fee</h3>
+      <p class="card-body">A 1.5% fee on secondary marketplace peer-to-peer item and gold exchanges, generating recurring protocol revenue as gaming transaction volumes surge.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📦</div>
+      <h3 class="card-title">3. Enterprise Game SDK</h3>
+      <p class="card-body">SaaS tier offering turn-key Unity & Unreal Engine plug-ins, drop table management, and analytics dashboards for external Web3 studios.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL</span>
+    <span>SLIDE 08</span>
+  </div>
+</div>
+
+<!-- SLIDE 9: ROADMAP -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">🗺️ Execution Plan</div>
+    <h2 class="slide-title">Strategic Roadmap (2026 – 2027)</h2>
+    <p class="slide-subtitle">Clear quarterly milestones to institutional scale and mainnet adoption.</p>
+  </div>
+  <div class="content-grid-4">
+    <div class="card highlight">
+      <div class="stat-label" style="color: #f59e0b;">Q4 2026 (COMPLETE)</div>
+      <h3 class="card-title">Foundation</h3>
+      <p class="card-body" style="font-size: 0.95rem;">
+        ✓ Core Gastem ERC-1155<br>
+        ✓ 12/12 Foundry Tests<br>
+        ✓ Botchain Testnet Deploy<br>
+        ✓ Guildmaster Web App
+      </p>
+    </div>
+    <div class="card">
+      <div class="stat-label">Q1 2027</div>
+      <h3 class="card-title">Security & Mainnet</h3>
+      <p class="card-body" style="font-size: 0.95rem;">
+        • Formal Security Audit<br>
+        • Botchain Mainnet Launch<br>
+        • EIP-2981 Royalty Integration<br>
+        • In-Game Crafting Engine
+      </p>
+    </div>
+    <div class="card">
+      <div class="stat-label">Q2 2027</div>
+      <h3 class="card-title">Game SDKs</h3>
+      <p class="card-body" style="font-size: 0.95rem;">
+        • Unity & Unreal SDKs<br>
+        • 5+ Studio Integrations<br>
+        • Verifiable Random Drops<br>
+        • Guild Vault Rentals
+      </p>
+    </div>
+    <div class="card">
+      <div class="stat-label">Q3 2027</div>
+      <h3 class="card-title">Omnichain Scale</h3>
+      <p class="card-body" style="font-size: 0.95rem;">
+        • LayerZero & CCIP Bridges<br>
+        • Cross-chain Item Teleport<br>
+        • DAO Governance Rollout<br>
+        • Global Guild Tournaments
+      </p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL</span>
+    <span>SLIDE 09</span>
+  </div>
+</div>
+
+<!-- SLIDE 10: THE ASK & CONTACT -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-category">🤝 Join the Guild</div>
+    <h2 class="slide-title">The Ask: $1.5M Seed Investment</h2>
+    <p class="slide-subtitle">Accelerating on-chain game infrastructure, developer SDKs, and studio onboarding.</p>
+  </div>
+  <div class="content-grid-2">
+    <div class="card highlight">
+      <h3 class="card-title" style="color: #f59e0b;">Use of Funds</h3>
+      <ul style="margin-left: 1.2rem; color: #cbd5e1; font-size: 1.05rem; line-height: 1.9;">
+        <li><strong style="color: #fff;">40% ($600K):</strong> Engineering & Unity/Unreal Engine Game SDKs</li>
+        <li><strong style="color: #fff;">30% ($450K):</strong> Smart Contract Audits & Formal Verification</li>
+        <li><strong style="color: #fff;">20% ($300K):</strong> Game Studio Integration Grants & Ecosystem Growth</li>
+        <li><strong style="color: #fff;">10% ($150K):</strong> Operations, Legal & Protocol Compliance</li>
+      </ul>
+    </div>
+    <div class="card highlight-purple">
+      <h3 class="card-title" style="color: #d8b4fe;">Protocol & Team Contacts</h3>
+      <p class="card-body" style="font-size: 1.05rem; line-height: 1.8;">
+        <strong style="color: #fff;">Contract:</strong> <code>0x74300bF99A3689683212d3558191E16bD9092181</code><br>
+        <strong style="color: #fff;">Network:</strong> Botchain Testnet (Chain ID 968)<br>
+        <strong style="color: #fff;">Explorer:</strong> scan.bohr.life/address/0x74300...2181<br>
+        <strong style="color: #fff;">Web App:</strong> Vite + React Guildmaster Portal<br>
+        <strong style="color: #fff;">Team:</strong> Senior Web3 & Game Economy Engineers
+      </p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="tag">GASTEM PROTOCOL • THANK YOU</span>
+    <span>SLIDE 10</span>
+  </div>
+</div>
+
+</body>
+</html>

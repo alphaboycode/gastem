@@ -1,0 +1,191 @@
+================================================================================
+                                G A S T E M
+================================================================================
+             The Unified Multi-Token Economy for On-Chain Gaming
+            Fungible Currency, Consumables & 1-of-1 Relics in One Contract
+                           Botchain Testnet (Chain ID 968)
+                                 PITCH DECK
+================================================================================
+
+
+1. EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+Gastem is an institutional-grade, multi-token game item protocol built on Botchain.
+By consolidating in-game currencies (Gold), stackable consumables (Potions, Scrolls),
+and exclusive 1-of-1 legendary equipment (Swords, Shields, Relics) into a single,
+battle-tested ERC-1155 smart contract, Gastem eliminates the friction, high gas
+costs, and contract fragmentation that plague current Web3 games.
+
+
+2. THE PROBLEM: FRAGMENTATION IN WEB3 GAMING
+--------------------------------------------------------------------------------
+* Tripled Smart Contract Overhead:
+  Existing games deploy separate ERC-20 contracts for gold/currency, ERC-1155
+  for materials/potions, and ERC-721 for unique weapons. This fragments player
+  inventories and tripling gas/deployment costs.
+
+* Friction in Player Experience:
+  Players must approve multiple contracts (ERC-20 + ERC-721 + ERC-1155) to trade
+  or interact with game loops.
+
+* No Atomic Multi-Asset Swaps:
+  Transferring an adventurer's loadout (e.g. 500 gold, 3 potions, 1 sword) requires
+  multiple distinct transactions across different contracts, risking partial
+  execution and failed trades.
+
+* Off-Chain Metadata Vulnerability:
+  Traditional NFT games rely on centralized IPFS gateways or HTTP links that
+  experience outages, link rot, or gateway timeouts.
+
+
+3. THE SOLUTION: GASTEM PROTOCOL
+--------------------------------------------------------------------------------
+Gastem unifies all game assets into a single ERC-1155 architecture on Botchain:
+
+* ID 1 = Realm Gold:
+  Fungible, zero-decimals currency for microtransactions, trade, and rewards.
+
+* IDs 100 - 999 = Fungible Consumables:
+  Stackable game assets (Health/Mana Potions, Elixirs, Scrolls) with optional
+  hard-capped supplies (e.g. maxSupply 500) or unlimited circulation.
+
+* IDs 1,000,000+ = Unique 1-of-1 Legendary Relics:
+  Auto-incremented, strictly unique items where maxSupply is locked to 1.
+  A custom override in the ERC-1155 update hook guarantees that no unique ID
+  can ever be minted a second time, even if burned by a player.
+
+* 100% On-Chain Base64 Metadata:
+  Dynamic SVG art and complete OpenSea/ERC-1155 compliant JSON metadata generated
+  directly by the EVM bytecode with zero off-chain dependencies.
+
+* Atomic Batch Transactions:
+  Players transfer combinations of Gold, Potions, and Legendary Swords in a
+  single `safeBatchTransferFrom` transaction.
+
+
+4. MARKET OPPORTUNITY
+--------------------------------------------------------------------------------
+* Total Addressable Market (TAM):
+  The global Web3 gaming market is projected to reach $65B+ by 2030, driven by
+  player-owned economies and high-speed EVM L1/L2 chains like Botchain.
+
+* Serviceable Addressable Market (SAM):
+  Over 2,500 active decentralized games requiring inventory, crafting, and
+  trading infrastructure.
+
+* Serviceable Obtainable Market (SOM):
+  Initial capture of RPG, MMO, and Strategy games deploying on Botchain and
+  high-throughput EVM ecosystems.
+
+
+5. TECHNICAL ARCHITECTURE & INNOVATION
+--------------------------------------------------------------------------------
+* Solidity ^0.8.24 + OpenZeppelin Contracts v5.2.0:
+  Built with modern EVM efficiency and custom errors for minimal gas overhead.
+
+* Multiple-Inheritance Conflict Resolution:
+  Cleanly overrides `_update` and `supportsInterface` across `ERC1155`,
+  `ERC1155Supply`, and `AccessControl`.
+
+* Replay-Proof Unique Minting:
+  Internal tracking ensures unique items can never be re-issued, preserving
+  digital scarcity under all conditions.
+
+* Zero-Environment-Variable Sync Pipeline:
+  Automated frontend scripts (`npm run sync`) synchronize ABI and contract
+  deployments directly from Foundry artifacts into typed TypeScript configurations,
+  eliminating human error during deployments.
+
+
+6. TRACTION & ON-CHAIN VERIFICATION (BOTCHAIN TESTNET)
+--------------------------------------------------------------------------------
+* Contract Address:
+  0x74300bF99A3689683212d3558191E16bD9092181
+  Network: Botchain Testnet (Chain ID: 968, RPC: https://rpc.bohr.life)
+  Explorer: https://scan.bohr.life/address/0x74300bF99A3689683212d3558191E16bD9092181
+
+* Live On-Chain Assets:
+  - Gold (ID 1): Seeded & circulating
+  - Health Potion (ID 100): Restores 50 HP
+  - Mana Potion (ID 101): Restores 50 MP
+  - Elixir of Dragon Breath (ID 102): Registered & minted (Tx: 0x20eb...165e)
+  - Sunforged Claymore (ID 1,000,000): Forged 1-of-1 (Tx: 0x4482...888f)
+
+* Battle-Tested Testing:
+  - 100% pass rate across 12 comprehensive Foundry test suites, including
+    fuzzing on unlimited and capped supply ranges.
+  - Over 27 successful on-chain transactions confirmed on Botchain.
+
+
+7. COMPETITIVE ADVANTAGE
+--------------------------------------------------------------------------------
+Feature                   | Standard ERC-721/20 | Generic ERC-1155 | Gastem Protocol
+--------------------------|---------------------|------------------|----------------
+Contract Footprint        | 3+ Contracts        | 1 Contract       | 1 Contract
+Unique Scarcity Guarantee | Yes (ERC-721 only)  | No (Manual logic)| Hard-Enforced
+Atomic Mixed Transfers    | Impossible          | Partial          | Full Native
+On-Chain Metadata & Art   | Rare (Expensive)    | Rare             | Native Base64 SVG
+Deployment Cost           | High (3x deploy)    | Moderate         | Low (Single deploy)
+Developer Tooling         | Fragmented          | Generic          | Zero-.env Auto Sync
+
+
+8. BUSINESS MODEL & MONETIZATION
+--------------------------------------------------------------------------------
+1. Blueprint Registration & Minting Royalties:
+   Micro-fees collected on game item creation and primary mints.
+
+2. On-Chain Marketplace Protocol Fees:
+   Standard 1.5% fee on secondary market trades across the Gastem item codex.
+
+3. Enterprise Game Studio SDK:
+   SaaS licensing for game development teams looking to integrate Gastem's
+   inventory engine into Unity and Unreal Engine titles.
+
+
+9. STRATEGIC ROADMAP
+--------------------------------------------------------------------------------
+* Phase 1 (Q4 2026) - FOUNDATION (COMPLETE):
+  [x] Core ERC-1155 smart contract architecture
+  [x] Foundry test suite with 100% pass rate & fuzzing
+  [x] Botchain Testnet deployment & verification
+  [x] Guildmaster Admin Web Application & Inventory UI
+  [x] Successful multi-wallet transaction execution
+
+* Phase 2 (Q1 2027) - MAINNET & AUDITS:
+  [ ] Formal security audits by leading Web3 audit firms
+  [ ] Botchain Mainnet deployment
+  [ ] EIP-2981 royalty standard expansion
+  [ ] Decentralized crafting and recipe mechanics
+
+* Phase 3 (Q2 2027) - SDK & STUDIO EXPANSION:
+  [ ] Unity and Unreal Engine C# / C++ Game SDKs
+  [ ] On-chain loot drops and randomized drop tables (VRF)
+  [ ] Partnerships with 5+ flagship Botchain gaming titles
+
+* Phase 4 (Q3 2027) - CROSS-CHAIN OMNICHAIN ITEMS:
+  [ ] Cross-chain item bridging via LayerZero and Chainlink CCIP
+  [ ] Interoperable guild inventory pooling & rental contracts
+
+
+10. THE TEAM & THE ASK
+--------------------------------------------------------------------------------
+* Team:
+  Senior Web3 Engineers, Smart Contract Architects, and Game Economy Specialists
+  with track records across Ethereum, L2 rollups, and high-performance alt-chains.
+
+* The Ask:
+  Seeking $1,500,000 Seed Investment.
+  - 40%: Engineering & Game Engine SDK Development (Unity / Unreal)
+  - 30%: Smart Contract Security Audits & Formal Verification
+  - 20%: Developer Ecosystem Grants & Studio Integration Incentives
+  - 10%: Legal, Operations & Compliance
+
+* Contact & Links:
+  - Smart Contract: 0x74300bF99A3689683212d3558191E16bD9092181
+  - Network: Botchain Testnet (Chain ID 968)
+  - Explorer: https://scan.bohr.life/address/0x74300bF99A3689683212d3558191E16bD9092181
+  - Repository: gastem/
+
+================================================================================
+                                END OF PITCH DECK
+================================================================================

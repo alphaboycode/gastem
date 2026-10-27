@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+dist/
+
+# Foundry compiler artifacts & cache
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# Sensitive files & local envs
+.env
+.env.*
+*.pem
+*.key
+keystores/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
