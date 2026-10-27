@@ -55,10 +55,13 @@ export default function App() {
   const [isMinter, setIsMinter] = useState<boolean>(false);
   const [items, setItems] = useState<Item[]>([]);
   const [goldBalance, setGoldBalance] = useState<bigint>(0n);
+  const [totalGoldSupply, setTotalGoldSupply] = useState<bigint>(0n);
   const [isLoadingItems, setIsLoadingItems] = useState<boolean>(false);
 
-  // Active view: 'inventory' | 'admin' | 'all'
-  const [activeTab, setActiveTab] = useState<"inventory" | "all" | "admin">("inventory");
+  // Active view: 'inventory' | 'admin'
+  const [activeTab, setActiveTab] = useState<"inventory" | "admin">("inventory");
+  // Filter inside inventory: 'all' or 'my'
+  const [filterMode, setFilterMode] = useState<"all" | "my">("all");
 
   // Transfer Modal
   const [transferModalItem, setTransferModalItem] = useState<Item | null>(null);
@@ -74,7 +77,7 @@ export default function App() {
   const [mintFungibleTo, setMintFungibleTo] = useState<string>("");
   const [mintFungibleAmount, setMintFungibleAmount] = useState<string>("100");
 
-  const [createId, setCreateId] = useState<string>("102");
+  const [createId, setCreateId] = useState<string>("103");
   const [createName, setCreateName] = useState<string>("");
   const [createDesc, setCreateDesc] = useState<string>("");
   const [createImg, setCreateImg] = useState<string>("");
@@ -171,6 +174,8 @@ export default function App() {
     setAccount(null);
     setBotBalance("0");
     setIsMinter(false);
+    setGoldBalance(0n);
+    setFilterMode("all");
   };
 
   // 2. Fetch BOT Native Balance & Roles
@@ -199,7 +204,7 @@ export default function App() {
       });
   }, [account, isContractZero]);
 
-  // 3. Fetch Items & Balances
+  // 3. Fetch Items & Balances (Runs whether wallet is connected or not!)
   const loadItems = useCallback(async () => {
     if (isContractZero) return;
     setIsLoadingItems(true);
@@ -243,14 +248,32 @@ export default function App() {
           const [name, description, imageUri, unique, maxSupply] = itemData;
 
           if (name && name.length > 0) {
-            let balance = 0n;
-            if (account) {
-              balance = await publicClient.readContract({
+            // Read total circulating supply for all items
+            let totalSupply = 0n;
+            try {
+              totalSupply = await publicClient.readContract({
                 address: config.contractAddress,
                 abi: gastemAbi,
-                functionName: "balanceOf",
-                args: [account, id],
+                functionName: "totalSupply",
+                args: [id],
               });
+            } catch {
+              // supply call fallback
+            }
+
+            // Read user's personal balance if wallet is connected
+            let balance = 0n;
+            if (account) {
+              try {
+                balance = await publicClient.readContract({
+                  address: config.contractAddress,
+                  abi: gastemAbi,
+                  functionName: "balanceOf",
+                  args: [account, id],
+                });
+              } catch {
+                // balance call fallback
+              }
             }
 
             fetchedItems.push({
@@ -261,10 +284,14 @@ export default function App() {
               unique,
               maxSupply,
               balance,
+              totalSupply,
             });
 
             if (id === 1n) {
-              setGoldBalance(balance);
+              setTotalGoldSupply(totalSupply);
+              if (account) {
+                setGoldBalance(balance);
+              }
             }
           }
         } catch {
@@ -317,7 +344,11 @@ export default function App() {
   // 4. Transfer Item Action
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!account || !transferModalItem) return;
+    if (!account) {
+      connectWallet();
+      return;
+    }
+    if (!transferModalItem) return;
     if (!isAddress(transferTo)) {
       alert("Invalid recipient address.");
       return;
@@ -358,7 +389,11 @@ export default function App() {
   // 5. Burn Item Action
   const handleBurn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!account || !burnModalItem) return;
+    if (!account) {
+      connectWallet();
+      return;
+    }
+    if (!burnModalItem) return;
     const amt = BigInt(burnAmount);
     if (amt <= 0n || amt > burnModalItem.balance) {
       alert("Invalid burn quantity.");
@@ -506,8 +541,15 @@ export default function App() {
     }
   };
 
-  // Filtered inventory items (owned by current user)
-  const myInventoryItems = items.filter((item) => item.balance > 0n);
+  // Filter items:
+  // If wallet connected and user selects 'my', filter to items where balance > 0
+  // Otherwise, show ALL items in the realm!
+  const displayedItems =
+    account && filterMode === "my"
+      ? items.filter((item) => item.balance > 0n)
+      : items;
+
+  const myOwnedCount = items.filter((i) => i.balance > 0n).length;
 
   return (
     <div>
@@ -540,14 +582,17 @@ export default function App() {
           </div>
 
           <div className="header-actions">
-            {/* Gold Counter in Header */}
-            {account && (
-              <div className="gold-counter" title="Your realm gold balance">
-                <div className="gold-counter-icon">🪙</div>
-                <span className="gold-counter-label">Gold</span>
-                <span className="gold-counter-value">{goldBalance.toLocaleString()}</span>
-              </div>
-            )}
+            {/* Gold Counter in Header (Always visible even when disconnected!) */}
+            <div
+              className="gold-counter"
+              title={account ? "Your personal gold balance" : "Total realm circulating gold"}
+            >
+              <div className="gold-counter-icon">🪙</div>
+              <span className="gold-counter-label">{account ? "Gold" : "Realm Gold"}</span>
+              <span className="gold-counter-value">
+                {account ? goldBalance.toLocaleString() : totalGoldSupply.toLocaleString()}
+              </span>
+            </div>
 
             {/* Navigation Tabs */}
             <div style={{ display: "flex", gap: "0.4rem" }}>
@@ -555,13 +600,7 @@ export default function App() {
                 className={`btn btn-tab ${activeTab === "inventory" ? "active" : ""}`}
                 onClick={() => setActiveTab("inventory")}
               >
-                🎒 Inventory {account ? `(${myInventoryItems.length})` : ""}
-              </button>
-              <button
-                className={`btn btn-tab ${activeTab === "all" ? "active" : ""}`}
-                onClick={() => setActiveTab("all")}
-              >
-                🏛️ Realm Codex ({items.length})
+                🎒 Inventory ({items.length})
               </button>
               {isMinter && (
                 <button
@@ -612,14 +651,77 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="main-content">
-        {/* TAB 1: USER INVENTORY */}
+        {/* TAB 1: INVENTORY (VISIBLE TO ALL, EVEN WITHOUT WALLET CONNECTED!) */}
         {activeTab === "inventory" && (
           <section>
+            {/* Top informational banner when disconnected */}
+            {!account && (
+              <div
+                style={{
+                  background: "linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(168, 85, 247, 0.08))",
+                  border: "1px solid rgba(245, 158, 11, 0.3)",
+                  borderRadius: "10px",
+                  padding: "0.85rem 1.25rem",
+                  marginBottom: "1.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: "0.75rem",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                  <span style={{ fontSize: "1.3rem" }}>🛡️</span>
+                  <span style={{ fontSize: "0.92rem", color: "#f1f5f9" }}>
+                    <strong>Viewing all Realm Inventories.</strong> All items registered on-chain are visible below. Connect your wallet to inspect personal balances or transfer items.
+                  </span>
+                </div>
+                <button
+                  className="btn btn-primary"
+                  style={{ padding: "0.4rem 0.9rem", fontSize: "0.8rem" }}
+                  onClick={connectWallet}
+                >
+                  Connect Wallet
+                </button>
+              </div>
+            )}
+
             <div className="section-header">
-              <h2 className="section-title">
-                <span>Your Inventory</span>
-                <span className="section-badge">{myInventoryItems.length} items owned</span>
-              </h2>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                <h2 className="section-title">
+                  <span>{filterMode === "my" ? "Your Personal Inventory" : "Realm Item Inventory"}</span>
+                  <span className="section-badge">{displayedItems.length} items</span>
+                </h2>
+
+                {/* Filter toggle if wallet is connected */}
+                {account && (
+                  <div style={{ display: "inline-flex", background: "rgba(0,0,0,0.3)", borderRadius: "6px", padding: "2px", border: "1px solid #1e293b" }}>
+                    <button
+                      className="quick-btn"
+                      style={{
+                        background: filterMode === "all" ? "rgba(245, 158, 11, 0.2)" : "transparent",
+                        color: filterMode === "all" ? "#fde68a" : "#94a3b8",
+                        borderColor: filterMode === "all" ? "#f59e0b" : "transparent",
+                      }}
+                      onClick={() => setFilterMode("all")}
+                    >
+                      All Realm Items ({items.length})
+                    </button>
+                    <button
+                      className="quick-btn"
+                      style={{
+                        background: filterMode === "my" ? "rgba(245, 158, 11, 0.2)" : "transparent",
+                        color: filterMode === "my" ? "#fde68a" : "#94a3b8",
+                        borderColor: filterMode === "my" ? "#f59e0b" : "transparent",
+                      }}
+                      onClick={() => setFilterMode("my")}
+                    >
+                      Owned by Me ({myOwnedCount})
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <button
                 className="btn btn-secondary"
                 style={{ fontSize: "0.8rem", padding: "0.35rem 0.8rem" }}
@@ -630,33 +732,30 @@ export default function App() {
               </button>
             </div>
 
-            {!account ? (
-              <div className="empty-state">
-                <div className="empty-state-icon">🛡️</div>
-                <h3 className="empty-state-title">Wallet Disconnected</h3>
-                <p className="empty-state-desc">
-                  Connect your Web3 wallet to inspect your swords, potions, and gold in the Gastem realm.
-                </p>
-                <button className="btn btn-primary" style={{ marginTop: "1.25rem" }} onClick={connectWallet}>
-                  Connect Wallet
-                </button>
-              </div>
-            ) : myInventoryItems.length === 0 ? (
+            {displayedItems.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-state-icon">🎒</div>
-                <h3 className="empty-state-title">Your Inventory is Empty</h3>
+                <h3 className="empty-state-title">
+                  {filterMode === "my" ? "Your Personal Inventory is Empty" : "No Items Found in Realm"}
+                </h3>
                 <p className="empty-state-desc">
-                  You do not possess any items or gold yet. Request potions or gold from an admin, or forge unique gear!
+                  {filterMode === "my"
+                    ? "You do not own any items yet. Switch to 'All Realm Items' to view items in circulation, or ask an admin for a grant!"
+                    : "Connecting to RPC node on Botchain Testnet to read registered items..."}
                 </p>
-                {isMinter && (
-                  <button className="btn btn-primary" style={{ marginTop: "1.25rem" }} onClick={() => setActiveTab("admin")}>
-                    Go to Admin Panel
+                {account && filterMode === "my" && (
+                  <button
+                    className="btn btn-primary"
+                    style={{ marginTop: "1rem" }}
+                    onClick={() => setFilterMode("all")}
+                  >
+                    View All Realm Items
                   </button>
                 )}
               </div>
             ) : (
               <div className="item-grid">
-                {myInventoryItems.map((item) => (
+                {displayedItems.map((item) => (
                   <div key={item.id.toString()} className={`item-card ${item.unique ? "is-unique" : ""}`}>
                     <div className="card-header-bar">
                       <span className={`badge ${item.unique ? "badge-unique" : "badge-stackable"}`}>
@@ -683,39 +782,56 @@ export default function App() {
 
                     <div className="card-stats">
                       <div>
-                        <div className="stat-label">Owned</div>
-                        <div className="stat-value">{item.balance.toLocaleString()}</div>
+                        <div className="stat-label">{account ? "Owned by You" : "Circulating"}</div>
+                        <div className="stat-value">
+                          {account ? item.balance.toLocaleString() : item.totalSupply.toLocaleString()}
+                        </div>
                       </div>
                       <div>
-                        <div className="stat-label">Max Supply</div>
+                        <div className="stat-label">Max Cap</div>
                         <div className="stat-value" style={{ color: "#94a3b8" }}>
                           {item.maxSupply === 0n ? "Unlimited" : item.maxSupply.toString()}
                         </div>
                       </div>
                     </div>
 
+                    {/* Action buttons */}
                     <div className="card-actions">
-                      <button
-                        className="btn btn-primary"
-                        style={{ fontSize: "0.8rem", padding: "0.45rem" }}
-                        onClick={() => {
-                          setTransferModalItem(item);
-                          setTransferAmount("1");
-                          setTransferTo("");
-                        }}
-                      >
-                        Transfer
-                      </button>
-                      <button
-                        className="btn btn-secondary"
-                        style={{ fontSize: "0.8rem", padding: "0.45rem" }}
-                        onClick={() => {
-                          setBurnModalItem(item);
-                          setBurnAmount("1");
-                        }}
-                      >
-                        Burn
-                      </button>
+                      {!account ? (
+                        <button
+                          className="btn btn-secondary"
+                          style={{ gridColumn: "span 2", fontSize: "0.8rem", padding: "0.45rem" }}
+                          onClick={connectWallet}
+                        >
+                          Connect to Trade
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            className="btn btn-primary"
+                            style={{ fontSize: "0.8rem", padding: "0.45rem" }}
+                            disabled={item.balance === 0n}
+                            onClick={() => {
+                              setTransferModalItem(item);
+                              setTransferAmount("1");
+                              setTransferTo("");
+                            }}
+                          >
+                            Transfer
+                          </button>
+                          <button
+                            className="btn btn-secondary"
+                            style={{ fontSize: "0.8rem", padding: "0.45rem" }}
+                            disabled={item.balance === 0n}
+                            onClick={() => {
+                              setBurnModalItem(item);
+                              setBurnAmount("1");
+                            }}
+                          >
+                            Burn
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -724,86 +840,7 @@ export default function App() {
           </section>
         )}
 
-        {/* TAB 2: REALM CODEX (ALL ITEMS) */}
-        {activeTab === "all" && (
-          <section>
-            <div className="section-header">
-              <h2 className="section-title">
-                <span>Realm Codex</span>
-                <span className="section-badge">{items.length} registered items</span>
-              </h2>
-              <button
-                className="btn btn-secondary"
-                style={{ fontSize: "0.8rem", padding: "0.35rem 0.8rem" }}
-                onClick={() => loadItems()}
-                disabled={isLoadingItems}
-              >
-                {isLoadingItems ? <span className="spinner" /> : "↻ Refresh"}
-              </button>
-            </div>
-
-            <div className="item-grid">
-              {items.map((item) => (
-                <div key={item.id.toString()} className={`item-card ${item.unique ? "is-unique" : ""}`}>
-                  <div className="card-header-bar">
-                    <span className={`badge ${item.unique ? "badge-unique" : "badge-stackable"}`}>
-                      {item.unique ? "★ UNIQUE (1 of 1)" : "STACKABLE"}
-                    </span>
-                    <span className="item-id-badge">#{item.id.toString()}</span>
-                  </div>
-
-                  <div className="card-image-wrapper">
-                    <img src={item.imageUri} alt={item.name} className="card-image" />
-                  </div>
-
-                  <h3 className="item-name">{item.name}</h3>
-                  <p className="item-desc">{item.description}</p>
-
-                  <div className="card-stats">
-                    <div>
-                      <div className="stat-label">Your Balance</div>
-                      <div className="stat-value">{item.balance.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <div className="stat-label">Cap</div>
-                      <div className="stat-value" style={{ color: "#94a3b8" }}>
-                        {item.maxSupply === 0n ? "Unlimited" : item.maxSupply.toString()}
-                      </div>
-                    </div>
-                  </div>
-
-                  {account && item.balance > 0n && (
-                    <div className="card-actions">
-                      <button
-                        className="btn btn-primary"
-                        style={{ fontSize: "0.8rem", padding: "0.45rem" }}
-                        onClick={() => {
-                          setTransferModalItem(item);
-                          setTransferAmount("1");
-                          setTransferTo("");
-                        }}
-                      >
-                        Transfer
-                      </button>
-                      <button
-                        className="btn btn-secondary"
-                        style={{ fontSize: "0.8rem", padding: "0.45rem" }}
-                        onClick={() => {
-                          setBurnModalItem(item);
-                          setBurnAmount("1");
-                        }}
-                      >
-                        Burn
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* TAB 3: ADMIN PANEL (VISIBLE ONLY IF MINTER_ROLE) */}
+        {/* TAB 2: ADMIN PANEL (VISIBLE ONLY IF MINTER_ROLE) */}
         {activeTab === "admin" && isMinter && (
           <section>
             <div className="section-header">
@@ -835,6 +872,9 @@ export default function App() {
                       </button>
                       <button type="button" className="quick-btn" onClick={() => setMintFungibleId("101")}>
                         Mana Potion (101)
+                      </button>
+                      <button type="button" className="quick-btn" onClick={() => setMintFungibleId("102")}>
+                        Elixir Dragon (102)
                       </button>
                     </div>
                     <input
