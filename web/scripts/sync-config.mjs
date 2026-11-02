@@ -5,7 +5,10 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const deploymentPath = path.resolve(__dirname, "../../contracts/deployments/968.json");
+let deploymentPath = path.resolve(__dirname, "../../contracts/deployments/677.json");
+if (!fs.existsSync(deploymentPath)) {
+  deploymentPath = path.resolve(__dirname, "../../contracts/deployments/968.json");
+}
 const configPath = path.resolve(__dirname, "../src/config.ts");
 
 if (!fs.existsSync(deploymentPath)) {

@@ -23,13 +23,13 @@ function getEnvVar(name) {
   return match ? match[1].trim() : null;
 }
 
-const RPC_URL = "https://rpc.bohr.life";
-const CHAIN_ID = 968;
+const RPC_URL = "https://rpc.botchain.ai";
+const CHAIN_ID = 677;
 const GASTEM_ADDRESS = "0xB3c87CF82359FC38DDbFDcdEF673C09c7197B0DC";
 
 const botchain = defineChain({
   id: CHAIN_ID,
-  name: "Botchain Testnet",
+  name: "Botchain Mainnet",
   nativeCurrency: { name: "BOT", symbol: "BOT", decimals: 18 },
   rpcUrls: {
     default: { http: [RPC_URL] },

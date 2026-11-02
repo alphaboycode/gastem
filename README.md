@@ -1,8 +1,23 @@
 # Gastem — Game Item System on Botchain
 
-Gastem is a dark-fantasy Web3 game item system where **Gold**, **Potions**, and **Legendary Unique Weapons** coexist inside a **single ERC-1155 multi-token smart contract** on **Botchain Testnet** (Chain ID: 968).
+Gastem is a dark-fantasy Web3 game item system where **Gold**, **Potions**, and **Legendary Unique Weapons** coexist inside a **single ERC-1155 multi-token smart contract** deployed on **Botchain Mainnet** (Chain ID: 677) and Botchain Testnet (Chain ID: 968).
 
 Fungible items (gold, mana/health potions) and unique items (one-of-a-kind legendary swords with supply strictly equal to 1) live side-by-side with complete on-chain base64 JSON metadata and strict supply controls.
+
+---
+
+## Deployments
+
+- **Botchain Mainnet (Chain ID: 677)**:
+  - **Contract Address**: [`0x9c0F15512c67B2ac28efD8CB2557da3dA595044d`](https://scan.botchain.ai/address/0x9c0F15512c67B2ac28efD8CB2557da3dA595044d)
+  - **RPC**: `https://rpc.botchain.ai`
+  - **Native Token**: `BOT` (Total Supply: 150 Million)
+  - **Explorer**: [https://scan.botchain.ai/](https://scan.botchain.ai/)
+  - **BOT Chain Website**: [https://www.botchain.ai/en/](https://www.botchain.ai/en/)
+- **Botchain Testnet (Chain ID: 968)**:
+  - **Contract Address**: [`0x74300bF99A3689683212d3558191E16bD9092181`](https://scan.bohr.life/address/0x74300bF99A3689683212d3558191E16bD9092181)
+  - **RPC**: `https://rpc.bohr.life`
+  - **Explorer**: [https://scan.bohr.life/](https://scan.bohr.life/)
 
 ---
 
@@ -11,19 +26,15 @@ Fungible items (gold, mana/health potions) and unique items (one-of-a-kind legen
 | Token ID Range | Item Type | Max Supply | Description |
 |---|---|---|---|
 | `1` | **Gold** | Unlimited (`0`) | Sovereign realm currency. |
-| `100` – `999` | **Fungible Items** | Configurable (or `0` = unlimited) | Consumables, potions, scrolls, materials. Seeded with Health Potion (`100`) and Mana Potion (`101`). |
-| `1,000,000`+ | **Unique Items** | Exactly `1` | Auto-incrementing 1-of-1 relics (e.g. Sunforged Claymore, Dragonscale Aegis). Re-minting is blocked even if burned. |
+| `100` – `999` | **Fungible Items** | Configurable (or `0` = unlimited) | Consumables, potions, scrolls, materials. Seeded with Health Potion (`100`), Mana Potion (`101`), and Elixir of Dragon Breath (`102`). |
+| `1,000,000`+ | **Unique Items** | Exactly `1` | Auto-incrementing 1-of-1 relics (e.g. Sunforged Claymore, Shadowblade of the Void). Re-minting is blocked even if burned. |
 
 ---
 
 ## Tech Stack
 
 - **Smart Contracts**: Foundry (`forge`, `cast`), Solidity `^0.8.24`, OpenZeppelin Contracts `v5.2.0`
-- **Network**: Botchain Testnet
-  - **Chain ID**: `968`
-  - **RPC**: `https://rpc.bohr.life`
-  - **Native Token**: `BOT`
-  - **Explorer**: `https://scan.bohr.life/`
+- **Networks**: Botchain Mainnet (677) & Botchain Testnet (968)
 - **Frontend**: Vite + React 18 + TypeScript, `viem` for chain interaction, plain CSS (dark fantasy theme)
 
 ---
@@ -111,9 +122,29 @@ forge test -vvv
 
 ---
 
-## Deployment to Botchain Testnet
+## Deployment Commands
 
+### Deploy to Botchain Mainnet (Chain ID 677)
 Deploy using the Foundry encrypted keystore account `gastem`:
+
+```bash
+cd contracts
+forge script script/Deploy.s.sol \
+  --rpc-url https://rpc.botchain.ai \
+  --account gastem \
+  --password papa4mama4 \
+  --broadcast \
+  --legacy
+```
+
+Address output is saved to `contracts/deployments/677.json`:
+```json
+{
+  "address": "0x9c0F15512c67B2ac28efD8CB2557da3dA595044d"
+}
+```
+
+### Deploy to Botchain Testnet (Chain ID 968)
 
 ```bash
 cd contracts
@@ -125,18 +156,18 @@ forge script script/Deploy.s.sol \
   --legacy
 ```
 
-### Fallback Flags for Gas Estimation
-If gas estimation fails or fluctuates on Botchain:
-- Add `--legacy` to force legacy transaction type (type 0).
-- Add `--gas-price <WEI>` (e.g., `--gas-price 25000000000` for 25 gwei).
-- Add `--slow` if nonces need slower submission intervals.
-
-The deployment script automatically outputs the deployed address to `contracts/deployments/968.json`:
+Address output is saved to `contracts/deployments/968.json`:
 ```json
 {
   "address": "0x74300bF99A3689683212d3558191E16bD9092181"
 }
 ```
+
+### Fallback Flags for Gas Estimation
+If gas estimation fails or fluctuates on Botchain:
+- Add `--legacy` to force legacy transaction type (type 0).
+- Add `--gas-price <WEI>` (e.g., `--gas-price 20000000000` for 20 gwei).
+- Add `--slow` if nonces need slower submission intervals.
 
 ---
 

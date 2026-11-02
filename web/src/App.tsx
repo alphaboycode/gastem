@@ -1110,6 +1110,78 @@ export default function App() {
         )}
       </main>
 
+      {/* Footer */}
+      <footer className="app-footer">
+        <div className="footer-container">
+          <div className="footer-proof-card">
+            <div className="footer-proof-header">
+              <span>⚔️</span>
+              <span>Proof on bot mainnet</span>
+            </div>
+            <div className="footer-proof-grid">
+              <div className="footer-proof-item">
+                <span className="footer-proof-label">Chain ID</span>
+                <span style={{ fontFamily: "var(--font-mono)", color: "var(--gold-light)", fontWeight: 700 }}>
+                  {config.chainId}
+                </span>
+              </div>
+              <div className="footer-proof-item">
+                <span className="footer-proof-label">Contract</span>
+                <a
+                  href={`${config.explorerUrl}/address/${config.contractAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-link"
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  {config.contractAddress}
+                </a>
+              </div>
+              <div className="footer-proof-item">
+                <span className="footer-proof-label">BOT Chain Website</span>
+                <a
+                  href="https://www.botchain.ai/en/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-link"
+                >
+                  https://www.botchain.ai/en/
+                </a>
+              </div>
+              <div className="footer-proof-item">
+                <span className="footer-proof-label">BOTScan explorer</span>
+                <a
+                  href="https://scan.botchain.ai/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-link"
+                >
+                  https://scan.botchain.ai/
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <div>
+              <span>GASTEM Protocol · ERC-1155 Unified Gaming Standard · </span>
+              <span style={{ color: "var(--gold-light)" }}>Botchain Mainnet (Chain ID: 677)</span>
+            </div>
+            <div>
+              <span>Native Currency: BOT · </span>
+              <a
+                href={`${config.explorerUrl}/address/${config.contractAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-link"
+              >
+                View on BOTScan ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
       {/* Transfer Modal */}
       {transferModalItem && (
         <div className="modal-overlay" onClick={() => setTransferModalItem(null)}>

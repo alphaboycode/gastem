@@ -6,6 +6,9 @@ dist/
 contracts/out/
 contracts/cache/
 contracts/broadcast/
+broadcast/
+**/broadcast/**
+**/cache/**
 
 # Sensitive files & local envs
 .env

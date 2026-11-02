@@ -9,3 +9,6 @@ fs_permissions = [{ access = "read-write", path = "./" }]
 
 [rpc_endpoints]
 botchain = "https://rpc.bohr.life"
+botchain_testnet = "https://rpc.bohr.life"
+botchain_mainnet = "https://rpc.botchain.ai"
+mainnet = "https://rpc.botchain.ai"
