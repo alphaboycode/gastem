@@ -6,8 +6,7 @@ import {
   createWalletClient,
   http,
   defineChain,
-  parseEther,
-  formatEther,
+  parseAbi,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -25,7 +24,7 @@ function getEnvVar(name) {
 
 const RPC_URL = "https://rpc.botchain.ai";
 const CHAIN_ID = 677;
-const GASTEM_ADDRESS = "0xB3c87CF82359FC38DDbFDcdEF673C09c7197B0DC";
+const CONTRACT_ADDRESS = "0x9c0F15512c67B2ac28efD8CB2557da3dA595044d";
 
 const botchain = defineChain({
   id: CHAIN_ID,
@@ -41,85 +40,125 @@ const publicClient = createPublicClient({
   transport: http(RPC_URL),
 });
 
+const gastemAbi = parseAbi([
+  "function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data) external",
+  "function burn(uint256 id, uint256 amount) external",
+  "function setApprovalForAll(address operator, bool approved) external",
+  "function balanceOf(address account, uint256 id) external view returns (uint256)",
+]);
+
+const w1Account = privateKeyToAccount(getEnvVar("WALLET_1_PRIVATE_KEY"));
+const w2Account = privateKeyToAccount(getEnvVar("WALLET_2_PRIVATE_KEY"));
+const w3Account = privateKeyToAccount(getEnvVar("WALLET_3_PRIVATE_KEY"));
+
+const w1 = w1Account.address;
+const w2 = w2Account.address;
+const w3 = w3Account.address;
+
 const wallets = [
   {
     name: "Wallet 1",
-    address: getEnvVar("WALLET_1_ADDRESS"),
-    privateKey: getEnvVar("WALLET_1_PRIVATE_KEY"),
+    account: w1Account,
+    actions: [
+      { name: "safeTransferFrom (10 Gold to W2)", fn: "safeTransferFrom", args: [w1, w2, 1n, 10n, "0x"] },
+      { name: "safeTransferFrom (10 Gold to W3)", fn: "safeTransferFrom", args: [w1, w3, 1n, 10n, "0x"] },
+      { name: "safeTransferFrom (2 Health Potions to W2)", fn: "safeTransferFrom", args: [w1, w2, 100n, 2n, "0x"] },
+      { name: "safeTransferFrom (2 Health Potions to W3)", fn: "safeTransferFrom", args: [w1, w3, 100n, 2n, "0x"] },
+      { name: "burn (1 Gold)", fn: "burn", args: [1n, 1n] },
+      { name: "burn (1 Health Potion)", fn: "burn", args: [100n, 1n] },
+      { name: "setApprovalForAll (W2 -> true)", fn: "setApprovalForAll", args: [w2, true] },
+      { name: "setApprovalForAll (W2 -> false)", fn: "setApprovalForAll", args: [w2, false] },
+    ],
   },
   {
     name: "Wallet 2",
-    address: getEnvVar("WALLET_2_ADDRESS"),
-    privateKey: getEnvVar("WALLET_2_PRIVATE_KEY"),
+    account: w2Account,
+    actions: [
+      { name: "safeTransferFrom (2 Mana Potions to W1)", fn: "safeTransferFrom", args: [w2, w1, 101n, 2n, "0x"] },
+      { name: "safeTransferFrom (2 Mana Potions to W3)", fn: "safeTransferFrom", args: [w2, w3, 101n, 2n, "0x"] },
+      { name: "safeTransferFrom (1 Gold to W1)", fn: "safeTransferFrom", args: [w2, w1, 1n, 1n, "0x"] },
+      { name: "burn (1 Mana Potion)", fn: "burn", args: [101n, 1n] },
+      { name: "burn (1 Mana Potion)", fn: "burn", args: [101n, 1n] },
+      { name: "setApprovalForAll (W1 -> true)", fn: "setApprovalForAll", args: [w1, true] },
+      { name: "setApprovalForAll (W3 -> true)", fn: "setApprovalForAll", args: [w3, true] },
+      { name: "setApprovalForAll (W1 -> false)", fn: "setApprovalForAll", args: [w1, false] },
+    ],
   },
   {
     name: "Wallet 3",
-    address: getEnvVar("WALLET_3_ADDRESS"),
-    privateKey: getEnvVar("WALLET_3_PRIVATE_KEY"),
+    account: w3Account,
+    actions: [
+      { name: "safeTransferFrom (1 Dragon Elixir to W1)", fn: "safeTransferFrom", args: [w3, w1, 102n, 1n, "0x"] },
+      { name: "safeTransferFrom (1 Dragon Elixir to W2)", fn: "safeTransferFrom", args: [w3, w2, 102n, 1n, "0x"] },
+      { name: "safeTransferFrom (1 Gold to W1)", fn: "safeTransferFrom", args: [w3, w1, 1n, 1n, "0x"] },
+      { name: "burn (1 Dragon Elixir)", fn: "burn", args: [102n, 1n] },
+      { name: "burn (1 Dragon Elixir)", fn: "burn", args: [102n, 1n] },
+      { name: "setApprovalForAll (W1 -> true)", fn: "setApprovalForAll", args: [w1, true] },
+      { name: "setApprovalForAll (W2 -> true)", fn: "setApprovalForAll", args: [w2, true] },
+      { name: "setApprovalForAll (W2 -> false)", fn: "setApprovalForAll", args: [w2, false] },
+    ],
   },
 ];
 
 async function main() {
-  console.log("==================================================");
-  console.log("Starting 8 transactions per wallet on Botchain...");
-  console.log("==================================================\n");
+  console.log("========================================================================");
+  console.log(`Executing 8 contract calls per wallet directly on Gastem CA: ${CONTRACT_ADDRESS}`);
+  console.log("========================================================================\n");
 
   const allReceipts = [];
 
   for (const w of wallets) {
-    console.log(`\n>>> Processing ${w.name} (${w.address}) <<<`);
-    const account = privateKeyToAccount(w.privateKey);
+    console.log(`\n>>> Processing ${w.name} (${w.account.address}) <<<`);
     const walletClient = createWalletClient({
-      account,
+      account: w.account,
       chain: botchain,
       transport: http(RPC_URL),
     });
 
-    const initialBal = await publicClient.getBalance({ address: account.address });
-    console.log(`Initial Balance: ${formatEther(initialBal)} BOT`);
-
     let currentNonce = await publicClient.getTransactionCount({
-      address: account.address,
+      address: w.account.address,
       blockTag: "pending",
     });
-    console.log(`Starting Nonce: ${currentNonce}`);
+    console.log(`Starting Nonce for ${w.name}: ${currentNonce}`);
 
-    for (let i = 1; i <= 8; i++) {
-      console.log(`Sending tx ${i}/8 for ${w.name} (nonce ${currentNonce})...`);
+    for (let i = 0; i < w.actions.length; i++) {
+      const act = w.actions[i];
+      const txNum = i + 1;
+      console.log(`[${w.name}] Tx ${txNum}/8: ${act.name} (Nonce: ${currentNonce})...`);
 
-      const hash = await walletClient.sendTransaction({
-        to: GASTEM_ADDRESS,
-        value: parseEther("0.0001"),
+      const hash = await walletClient.writeContract({
+        address: CONTRACT_ADDRESS,
+        abi: gastemAbi,
+        functionName: act.fn,
+        args: act.args,
         nonce: currentNonce,
         gasPrice: 20000000000n, // 20 gwei
       });
 
-      console.log(`Tx submitted: ${hash}`);
+      console.log(`Tx broadcasted: ${hash}`);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log(`Confirmed in block ${receipt.blockNumber} (Status: ${receipt.status})`);
 
       allReceipts.push({
         wallet: w.name,
-        index: i,
+        index: txNum,
+        action: act.name,
         hash,
-        block: receipt.blockNumber,
+        block: receipt.blockNumber.toString(),
         status: receipt.status,
       });
 
       currentNonce++;
     }
-
-    const finalBal = await publicClient.getBalance({ address: account.address });
-    console.log(`Final Balance for ${w.name}: ${formatEther(finalBal)} BOT\n`);
   }
 
-  console.log("==================================================");
-  console.log("ALL 24 TRANSACTIONS COMPLETED SUCCESSFULLY!");
-  console.log("==================================================");
+  console.log("\n========================================================================");
+  console.log("ALL 24 DIRECT CONTRACT TRANSACTIONS CONFIRMED SUCCESSFULLY ON GASTEM CA!");
+  console.log("========================================================================");
   console.table(allReceipts);
 }
 
 main().catch((err) => {
-  console.error("Execution error:", err);
+  console.error("Execution failed:", err);
   process.exit(1);
 });

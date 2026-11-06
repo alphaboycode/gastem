@@ -1162,23 +1162,78 @@ export default function App() {
             </div>
           </div>
 
-          <div className="footer-bottom">
-            <div>
-              <span>GASTEM Protocol · ERC-1155 Unified Gaming Standard · </span>
-              <span style={{ color: "var(--gold-light)" }}>Botchain Mainnet (Chain ID: 677)</span>
+          {/* Ecosystem Section */}
+          <div className="footer-ecosystem-card">
+            <div className="ecosystem-badge-label">Part of the Ecosystem</div>
+
+            <div className="ecosystem-logo-circle">
+              <img
+                src="/bot-logo.png"
+                alt="BOT Chain"
+                className="ecosystem-logo-img"
+              />
             </div>
-            <div>
-              <span>Native Currency: BOT · </span>
+
+            <h3 className="ecosystem-brand-title">
+              <span className="ecosystem-brand-highlight">BOT</span> Chain
+            </h3>
+
+            <p className="ecosystem-tagline">The Unified Multi-Token Economy for On-Chain Gaming</p>
+
+            <div className="ecosystem-divider">
+              <span className="ecosystem-diamond" />
+            </div>
+
+            <div className="ecosystem-links">
               <a
-                href={`${config.explorerUrl}/address/${config.contractAddress}`}
+                href="https://www.botchain.ai/en/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="footer-link"
+                className="ecosystem-link"
               >
-                View on BOTScan ↗
+                <svg
+                  className="ecosystem-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+                <span>botchain.ai</span>
+              </a>
+              <a
+                href="https://scan.botchain.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ecosystem-link"
+              >
+                <svg
+                  className="ecosystem-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span>Explorer</span>
               </a>
             </div>
+
+            <div className="ecosystem-copyright">
+              © 2026 BOT Chain · Mainnet · Chain ID {config.chainId}
+            </div>
           </div>
+
+        
         </div>
       </footer>
 

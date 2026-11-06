@@ -27,9 +27,9 @@ BOT Chain Website (make it a hyperlink) https://www.botchain.ai/en/
 
 BOTScan explorer (make it a hyperlink) https://scan.botchain.ai/
 
+
+
 use the gastem wallet from cast wallet, check .env for PASSWORD
-
-
 
 
 Go to .env, there are 3 wallets there.

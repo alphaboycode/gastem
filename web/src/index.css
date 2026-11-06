@@ -686,6 +686,186 @@ body {
   padding-bottom: 1.75rem;
 }
 
+/* Ecosystem Card in Footer */
+.footer-ecosystem-card {
+  background: linear-gradient(180deg, rgba(19, 25, 38, 0.75) 0%, rgba(9, 12, 18, 0.85) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: var(--radius-md);
+  padding: 2.25rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.footer-ecosystem-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+}
+
+.ecosystem-badge-label {
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 1.35rem;
+  text-shadow: 0 0 12px var(--gold-glow);
+}
+
+.ecosystem-logo-circle {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 2px solid rgba(245, 158, 11, 0.35);
+  background: radial-gradient(circle, rgba(16, 163, 127, 0.12) 0%, rgba(13, 17, 26, 0.85) 75%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.15rem;
+  box-shadow: 0 0 24px rgba(16, 163, 127, 0.2), 0 0 12px var(--gold-glow), inset 0 0 16px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.ecosystem-logo-circle::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  pointer-events: none;
+}
+
+.footer-ecosystem-card:hover .ecosystem-logo-circle {
+  transform: scale(1.05);
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 32px rgba(16, 163, 127, 0.35), 0 0 18px var(--gold-glow);
+}
+
+.ecosystem-logo-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(16, 163, 127, 0.4));
+  transition: transform 0.3s ease;
+}
+
+.ecosystem-brand-title {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.ecosystem-brand-highlight {
+  background: linear-gradient(135deg, #fef08a 0%, #f59e0b 60%, #b45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ecosystem-tagline {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  margin-bottom: 1.25rem;
+}
+
+.ecosystem-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto 1.5rem;
+}
+
+.ecosystem-divider::before,
+.ecosystem-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
+.ecosystem-divider::before {
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.45));
+}
+
+.ecosystem-divider::after {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.45), transparent);
+}
+
+.ecosystem-diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--gold-primary);
+  transform: rotate(45deg);
+  margin: 0 12px;
+  box-shadow: 0 0 8px var(--gold-glow);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.ecosystem-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.ecosystem-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.ecosystem-link:hover {
+  color: var(--gold-light);
+  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.08);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.ecosystem-icon {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  opacity: 0.85;
+}
+
+.ecosystem-copyright {
+  font-size: 0.82rem;
+  color: var(--text-dark);
+  letter-spacing: 0.04em;
+}
+
 .footer-proof-card {
   background: rgba(18, 24, 38, 0.7);
   border: 1px solid rgba(217, 119, 6, 0.25);
